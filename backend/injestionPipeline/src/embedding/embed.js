@@ -16,11 +16,7 @@ async function loadEmbedder() {
 }
 
 export async function embedBatch(texts) {
-    const model = await loadEmbedder();
-    const vectors = [];
-    for (const text of texts) {
-        const output = await model(text, { pooling: 'mean', normalize: true });
-        vectors.push(Array.from(output.data));
-    }
-    return vectors;
+  const model = await loadEmbedder();
+  const output = await model(texts, { pooling: 'mean', normalize: true });
+  return output.tolist(); 
 }

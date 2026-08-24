@@ -20,6 +20,10 @@ export async function connectDB() {
     }
 }
 
+export async function closeDB() {
+    await client.close();
+}
+
 export function getCollection(){
     if(!collection){
         throw new Error ('unable to get collection the db connection failed')

@@ -1,26 +1,24 @@
-import { pipeline } from "@huggingface/transformers";
-import dotenv from 'dotenv'
+import dotenv from 'dotenv';
+dotenv.config();
 
-dotenv.config()
-const model = process.env.MODEL
+const GITHUB_TOKEN = process.env.GIT_TOKEN;
+const HEADERS = GITHUB_TOKEN ? { Authorization: `Bearer ${GITHUB_TOKEN}` } : {};
 
-let embedder = null
+export async function fetchGithubRepos(query, perPage = 10) {
+  const url = `https://api.github.com/search/repositories?q=${encodeURIComponent(query)}&per_page=${perPage}&sort=stars`;
+  const res = await fetch(url, { headers: HEADERS });
 
-async function loadEmbedder() {
-    if (!embedder) {
-        console.log('loading embedding model (first call only, may take a few seconds)...');
-        embedder = await pipeline('feature-extraction', model);
-    }
-    return embedder
+  if (!res.ok) {
+    throw new Error(`GitHub API error: ${res.status} ${res.statusText}`);
+  }
 
-}
-
-export async function embedBatch(texts) {
-    const model = await loadEmbedder();
-    const vectors = [];
-    for (const text of texts) {
-        const output = await model(text, { pooling: 'mean', normalize: true });
-        vectors.push(Array.from(output.data));
-    }
-    return vectors;
+  const data = await res.json();
+  return data.items.map(repo => ({
+    source: 'github',
+    title: repo.name,
+    description: repo.description || '',
+    url: repo.html_url,
+    stars: repo.stargazers_count,
+    text: `${repo.name}: ${repo.description || ''}`, // what gets embedded
+  }));
 }

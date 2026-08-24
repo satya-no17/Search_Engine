@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="100%" height="100%">
+  <defs>
+    <!-- True Black Void Background -->
+    <radialGradient id="voidBg" cx="50%" cy="50%" r="80%">
+      <stop offset="0%" stop-color="#070913" />
+      <stop offset="100%" stop-color="#000000" />
+    </radialGradient>
+
+    <!-- Super Soft Cute Glow -->
+    <filter id="kawaiiGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+
+    <filter id="backGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="30" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+
+    <!-- Cat Fur Gradient (Dark Slate to Deep Blue-Black) -->
+    <linearGradient id="furGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#162238" />
+      <stop offset="100%" stop-color="#0a101d" />
+    </linearGradient>
+
+    <!-- Inner Ear Pink/Cyan Soft Gradient -->
+    <linearGradient id="innerEarGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#00f0ff" stop-opacity="0.5" />
+      <stop offset="100%" stop-color="#ff79c6" stop-opacity="0.3" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="500" height="500" fill="url(#voidBg)" />
+
+  <!-- Ambient Backlight -->
+  <circle cx="250" cy="250" r="170" fill="#00f0ff" opacity="0.12" filter="url(#backGlow)" />
+
+  <!-- Outer Ring Badge -->
+  <circle cx="250" cy="250" r="215" fill="#04060b" stroke="#00f0ff" stroke-width="3" filter="url(#kawaiiGlow)" />
+  <circle cx="250" cy="250" r="198" fill="none" stroke="#00f0ff" stroke-width="1.5" stroke-dasharray="6 6" opacity="0.4" />
+
+  <!-- Cute Cat Face Structure -->
+  <g transform="translate(0, 15)">
+    <!-- Left Ear -->
+    <polygon points="155,170 125,75 210,135" fill="url(#furGrad)" stroke="#00f0ff" stroke-width="3" stroke-linejoin="round" filter="url(#kawaiiGlow)" />
+    <polygon points="160,158 140,98 198,138" fill="url(#innerEarGrad)" />
+
+    <!-- Right Ear -->
+    <polygon points="345,170 375,75 290,135" fill="url(#furGrad)" stroke="#00f0ff" stroke-width="3" stroke-linejoin="round" filter="url(#kawaiiGlow)" />
+    <polygon points="340,158 360,98 302,138" fill="url(#innerEarGrad)" />
+
+    <!-- Head Base (Chubby & Rounded) -->
+    <path d="M 140,195 
+             C 125,250 140,325 190,355 
+             C 220,372 280,372 310,355 
+             C 360,325 375,250 360,195 
+             C 345,150 155,150 140,195 Z" 
+          fill="url(#furGrad)" stroke="#00f0ff" stroke-width="3.5" stroke-linejoin="round" filter="url(#kawaiiGlow)" />
+
+    <!-- Tiny Cute Fluffy Tuft on Head -->
+    <path d="M 235,153 Q 250,135 265,153 Q 280,143 285,165 Q 250,160 215,165 Q 220,143 235,153 Z" fill="#00f0ff" opacity="0.9" />
+
+    <!-- Big Kawaii Shiny Anime Eyes -->
+    <!-- Left Eye -->
+    <g filter="url(#kawaiiGlow)">
+      <ellipse cx="195" cy="235" rx="32" ry="38" fill="#020408" stroke="#00f0ff" stroke-width="3" />
+      <ellipse cx="195" cy="235" rx="25" ry="31" fill="#0b1b33" />
+      <!-- Catchlights (Super Cute Sparkles) -->
+      <circle cx="183" cy="218" rx="11" ry="12" fill="#ffffff" />
+      <circle cx="210" cy="255" r="5" fill="#ffffff" />
+      <circle cx="180" cy="250" r="3" fill="#00f0ff" />
+    </g>
+
+    <!-- Right Eye -->
+    <g filter="url(#kawaiiGlow)">
+      <ellipse cx="305" cy="235" rx="32" ry="38" fill="#020408" stroke="#00f0ff" stroke-width="3" />
+      <ellipse cx="305" cy="235" rx="25" ry="31" fill="#0b1b33" />
+      <!-- Catchlights -->
+      <circle cx="293" cy="218" rx="11" ry="12" fill="#ffffff" />
+      <circle cx="320" cy="255" r="5" fill="#ffffff" />
+      <circle cx="290" cy="250" r="3" fill="#00f0ff" />
+    </g>
+
+    <!-- Tiny Cute Cat Nose -->
+    <polygon points="244,272 256,272 250,280" fill="#00f0ff" filter="url(#kawaiiGlow)" />
+    <!-- Happy W Mouth -->
+    <path d="M 250,280 Q 235,296 222,286" fill="none" stroke="#00f0ff" stroke-width="2.5" stroke-linecap="round" />
+    <path d="M 250,280 Q 265,296 278,286" fill="none" stroke="#00f0ff" stroke-width="2.5" stroke-linecap="round" />
+
+    <!-- Cute Whiskers (Soft & Minimal) -->
+    <g stroke="#00f0ff" stroke-width="2" opacity="0.6" stroke-linecap="round">
+      <line x1="125" y1="260" x2="168" y2="266" />
+      <line x1="120" y1="278" x2="166" y2="278" />
+      <line x1="375" y1="260" x2="332" y2="266" />
+      <line x1="380" y1="278" x2="334" y2="278" />
+    </g>
+
+    <!-- Tiny Headset for Coding Vibe -->
+    <path d="M 162,185 C 160,115 340,115 338,185" fill="none" stroke="#00f0ff" stroke-width="3" stroke-linecap="round" opacity="0.8" />
+    <rect x="152" y="210" width="14" height="36" rx="6" fill="#00f0ff" opacity="0.9" filter="url(#kawaiiGlow)" />
+  </g>
+
+  <!-- Floating Tiny Paw Print at Bottom -->
+  <g transform="translate(250, 400) scale(0.6)" filter="url(#kawaiiGlow)" opacity="0.85">
+    <ellipse cx="0" cy="14" rx="13" ry="10" fill="#00f0ff" />
+    <circle cx="-13" cy="-3" r="4.5" fill="#00f0ff" />
+    <circle cx="-4" cy="-10" r="5" fill="#00f0ff" />
+    <circle cx="4" cy="-10" r="5" fill="#00f0ff" />
+    <circle cx="13" cy="-3" r="4.5" fill="#00f0ff" />
+  </g>
+</svg>
