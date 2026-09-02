@@ -1,8 +1,23 @@
+'use client'
+
 import Image from 'next/image'
 import Link from 'next/link'
-import React from 'react'
+import { useRouter } from 'next/navigation'
+import React, { useState } from 'react'
 
 const page = () => {
+  const router = useRouter()
+  const [query, setQuery] = useState('')
+  const [category, setCategory] = useState('all')
+
+  const params = new URLSearchParams()
+  params.set('q', query)
+  params.set('category', category)
+
+  const handleSearch = () => {
+    router.push(`/search?${params.toString()}`)
+    console.log(category, query)
+  }
   return (
     <div className='h-[100%] bg-[#10141d] text-white'>
       <header className='flex p-3 border-b border-gray-200 dark:border-gray-800 justify-between items-center bg-white dark:bg-gray-900 sticky top-0 z-40 transition-colors'>
@@ -28,7 +43,7 @@ const page = () => {
           <div className='absolute left-1/2 top-24 h-80 w-80 -translate-x-1/2 rounded-full bg-cyan-400/10 blur-3xl sm:h-[28rem] sm:w-[28rem]' />
           <div className='absolute -bottom-40 -right-24 h-[28rem] w-[28rem] rounded-full bg-sky-500/10 blur-3xl' />
           <div className='absolute inset-x-0 top-0 h-px bg-cyan-300/20' />
-          <div className='absolute left-3 top-20 hidden select-none font-mono text-[10px] leading-8 text-slate-700/60 lg:block'>
+          <div className='absolute left-8 top-20 hidden select-none font-mono text-[12px] leading-8 text-slate-700/60 lg:block'>
             <p>const search = async (query) =&gt; {'{'}</p>
             <p className='pl-5'>return await index.find(query)</p>
             <p>{'}'}</p>
@@ -36,7 +51,8 @@ const page = () => {
             <p>Java vs Kotlin 2024</p>
             <p>Best frontend framework?</p>
           </div>
-          <div className='absolute right-3 top-20 hidden select-none font-mono text-[10px] leading-8 text-slate-700/60 lg:block'>
+          <div className='absolute right-10 top-20 hidden select-none font-mono text-[13px] leading-10 text-slate-700/60 lg:block'>
+            <p>Hunt Down Code. Instantly.</p>
             <p>How to center a div?</p>
             <p>if (indexed) {'{'}</p>
             <p className='pl-5'>build faster with Meowsearch</p>
@@ -52,17 +68,31 @@ const page = () => {
             <h1 className='text-4xl font-black leading-tight tracking-tight sm:text-6xl lg:text-7xl'>Hunt Down Code. Instantly.</h1>
             <div className='mx-auto mt-7 flex max-w-3xl items-center gap-3 rounded-2xl border-2 border-cyan-400 bg-slate-900/80 px-4 py-3 text-left shadow-[0_0_22px_rgba(34,211,238,0.35),inset_0_0_24px_rgba(15,23,42,0.8)] sm:gap-4 sm:px-5 sm:py-4'>
               <span className='text-3xl leading-none text-slate-400 sm:text-4xl' aria-hidden='true'>⌕</span>
-              <div className='min-w-0'>
+              <div className='w-full'>
                 <p className='truncate text-base text-slate-300 sm:text-xl'>Ask Meowsearch anything...</p>
-                <p className='mt-1 truncate text-xs text-slate-500 sm:text-base'>e.g. &quot;python list to dict&quot; or &quot;react hooks examples&quot;</p>
+                <input onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleSearch()
+                  }
+                }} className='p-2 w-full max-w-100 mt-1 truncate text-xs text-slate-500 sm:text-base border-0' value={query} onChange={(e) => (setQuery(e.target.value))} placeholder='e.g. &quot;python list to dict&quot; or &quot;react hooks examples&quot;' />
               </div>
             </div>
             <div className='mt-3 flex flex-wrap justify-center gap-1 text-xs text-slate-200 sm:gap-3 sm:text-sm'>
-              {['⌘ All', '◉ GitHub', '▤ StackOverflow', '● HackerNews', '▣ Dev.io'].map((source, index) => (
-                <button key={source} type='button' className={`rounded-lg px-2.5 py-2 transition sm:px-3 ${index === 0 ? 'bg-slate-700 text-white shadow-inner' : 'hover:bg-slate-800 hover:text-cyan-200'}`}>
+              {['⌘ All', '◉ GitHub', '▤ StackOverflow', '● HackerNews', '▣ Dev.io'].map((source, index) => {
+                let isActive = category===source
+                return(
+                <button
+                  className={`${isActive?'border-2':''} rounded-lg px-2 py-2 transition sm:px-3 ${index === 0 ? 'bg-slate-700 text-white shadow-inner' : 'hover:bg-slate-800 hover:text-cyan-200'}`}
+                  key={source}
+                  type='button'
+                  onClick={() => {
+                    setCategory(source)
+                  }}
+                >
                   {source}
+
                 </button>
-              ))}
+)})}
             </div>
           </div>
 
