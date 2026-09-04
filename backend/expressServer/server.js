@@ -1,14 +1,16 @@
-import cors from 'cors'
-import { configDotenv } from 'dotenv';
+import dotenv from 'dotenv';
 import app from "./src/app.js";
+import { connectDB } from "./src/config/db.js";
+dotenv.config()
 
-app.use(cors())
-const PORT = process.env.PORT||5000
+const PORT = process.env.PORT || 5000
 
-app.get('/',(req,res)=>{
-    res.json({message:"backend gateway is rolling"})
+app.get('/', (req, res) => {
+    res.json({ message: "backend gateway is rolling" })
 })
 
-app.listen(PORT,()=>{
-    console.log(`express app is rolling on http://localhost:${PORT}`)
-})
+connectDB().then(() => {
+    app.listen(PORT, () => {
+        console.log(`Express app is rolling on http://localhost:${PORT}`);
+    });
+});

@@ -7,14 +7,15 @@
   "type": "module",
   "main": "server.js",
   "scripts": {
-    
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev":"node server.js"
+    "dev": "node server.js"
   },
   "dependencies": {
+    "@huggingface/transformers": "^4.2.0",
     "axios": "^1.19.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "mongodb": "^7.6.0"
   }
 }
