@@ -11,6 +11,7 @@ async function loadEmbedder() {
     console.log('loading embedding model (first call only, may take a few seconds)...');
     embedder = await pipeline('feature-extraction', model);
   }
+  console.log('embedding model loaded:', typeof embedder)
   return embedder;
 }
 export async function embedQuery(text) {
