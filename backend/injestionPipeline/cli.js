@@ -7,7 +7,7 @@ import gradient from 'gradient-string';
 import * as p from '@clack/prompts';
 
 import { connectDB, closeDB } from './src/config/db.js';
-import { ingest, ingestGithub, ingestReddit } from './main.js';
+import { ingest, ingestDevTo, ingestGithub, ingestHackerNews, ingestReddit, ingestStackOverflow } from './main.js';
 
 // Rainbow-ish gradient banner instead of flat cyan
 console.log(
@@ -36,8 +36,11 @@ async function main() {
   const from = await p.select({
     message: chalk.yellow('Where should we fetch from?'),
     options: [
-      { value: 'both', label: chalk.green('Both'), hint: 'GitHub + Reddit' },
+      { value: 'All', label: chalk.green('All'), hint: 'From all' },
       { value: 'github', label: chalk.blue('GitHub'), hint: 'high rate limit' },
+      { value: 'devto', label: chalk.hex('#FF4500')('Dev.to'), hint: 'slower, rate-limited' },
+      { value: 'stack', label: chalk.hex('#FF4500')('Stack Overflow'), hint: 'slower, rate-limited' },
+      { value: 'hackernews', label: chalk.hex('#FF4500')('Hacker News'), hint: 'slower, rate-limited' },
       { value: 'reddit', label: chalk.hex('#FF4500')('Reddit'), hint: 'slower, rate-limited' },
     ],
   });
@@ -50,7 +53,10 @@ async function main() {
   const sourceMap = {
     github: ingestGithub,
     reddit: ingestReddit,
-    both: ingest,
+    devto: ingestDevTo,
+    stack: ingestStackOverflow,
+    hackernews: ingestHackerNews,
+    All: ingest,
   };
 
   const runIngest = sourceMap[from];
@@ -63,9 +69,15 @@ async function main() {
   s.start(chalk.dim(`Ingesting "${chalk.bold(query)}" from ${chalk.bold(from)}...`));
   try {
     const result = await runIngest(query);
-    s.stop(chalk.green(`✔ Done — inserted ${chalk.bold(result.inserted)} documents.`));
-    p.outro(chalk.bgGreen.black.bold(' Ingestion complete ✔ '));
-  } catch (err) {
+    if (result.inserted === 0) {
+      s.stop(chalk.yellow('⚠ Done — 0 documents were inserted.'));
+      p.note('No documents were found or all sources failed for this query.', 'Notice');
+    } else {
+      s.stop(chalk.green(`✔ Done — inserted ${chalk.bold(result.inserted)} documents.`));
+      p.outro(chalk.bgGreen.black.bold(' Ingestion complete ✔ '));
+    }
+  }
+  catch (err) {
     s.stop(chalk.red('✘ Ingestion failed.'));
     p.log.error(chalk.red(err.message));
     process.exit(1);

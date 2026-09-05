@@ -17,7 +17,7 @@ export async function handleSearch(req, res) {
             filter.source = { $eq: cleanCategory };
         }
 
-        const collection = getCollection();
+        const collection = getCollection()
         const pipeline = [
             {
                 $vectorSearch: {

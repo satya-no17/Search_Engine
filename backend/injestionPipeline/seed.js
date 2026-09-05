@@ -3,7 +3,7 @@ dotenv.config();
 
 import { connectDB, closeDB } from './src/config/db.js';
 import { ingest, ingestGithub, ingestReddit } from './main.js';
-import { TOPICS } from './src/config/topics.js';
+import { TOPICS } from './src/lib/topics.js';
 
 const source = (process.argv[2] || 'both').toLowerCase();
 
