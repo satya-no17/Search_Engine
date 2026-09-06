@@ -50,7 +50,8 @@ const page = async ({ searchParams }) => {
           <button className='border rounded-2xl p-3 text-sm font-medium text-gray-600 transition hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'>LogIn/SignUp</button>
         </nav>
       </header>
-      <Results results={results} />
+
+      <Results results={results} category={category} />
     </div>
   )
 }
