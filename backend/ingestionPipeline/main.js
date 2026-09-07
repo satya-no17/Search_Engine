@@ -15,39 +15,39 @@ import { fetchStackOverflowPosts } from './src/ingestion/stackOverflow.js';
 //
 // OPTION 1: Filter existing URLs BEFORE embedding (Saves ML computation time)
 // ----------------------------------------------------------------------------
-// async function embedAndInsert(docs) {
-//   if (!docs.length) {
-//     console.log('No documents fetched, nothing to insert.');
-//     return { inserted: 0 };
-//   }
-//
-//   const collection = getCollection();
-//
-//   // Check MongoDB for already existing URLs
-//   const urls = docs.map(doc => doc.url).filter(Boolean);
-//   const existingDocs = await collection.find({ url: { $in: urls } }, { projection: { url: 1 } }).toArray();
-//   const existingUrls = new Set(existingDocs.map(d => d.url));
-//
-//   // Keep only new documents that are not in the DB
-//   const newDocs = docs.filter(doc => !existingUrls.has(doc.url));
-//
-//   if (!newDocs.length) {
-//     console.log('All documents already exist in DB, skipping embedding.');
-//     return { inserted: 0 };
-//   }
-//
-//   // Embed only new documents
-//   const texts = newDocs.map(doc => doc.text);
-//   const vectors = await embedBatch(texts);
-//
-//   const finalDocs = newDocs.map((doc, i) => {
-//     const { text, ...rest } = doc;
-//     return { ...rest, embedding: vectors[i], createdAt: new Date() };
-//   });
-//
-//   await collection.insertMany(finalDocs);
-//   return { inserted: finalDocs.length };
-// }
+async function embedAndInsert(docs) {
+  if (!docs.length) {
+    console.log('No documents fetched, nothing to insert.');
+    return { inserted: 0 };
+  }
+
+  const collection = getCollection();
+
+  // Check MongoDB for already existing URLs
+  const urls = docs.map(doc => doc.url).filter(Boolean);
+  const existingDocs = await collection.find({ url: { $in: urls } }, { projection: { url: 1 } }).toArray();
+  const existingUrls = new Set(existingDocs.map(d => d.url));
+
+  // Keep only new documents that are not in the DB
+  const newDocs = docs.filter(doc => !existingUrls.has(doc.url));
+
+  if (!newDocs.length) {
+    console.log('All documents already exist in DB, skipping embedding.');
+    return { inserted: 0 };
+  }
+
+  // Embed only new documents
+  const texts = newDocs.map(doc => doc.text);
+  const vectors = await embedBatch(texts);
+
+  const finalDocs = newDocs.map((doc, i) => {
+    const { text, ...rest } = doc;
+    return { ...rest, embedding: vectors[i], createdAt: new Date() };
+  });
+
+  await collection.insertMany(finalDocs);
+  return { inserted: finalDocs.length };
+}
 //
 // OPTION 2: Upsert with bulkWrite (Updates existing documents & inserts new ones)
 // ----------------------------------------------------------------------------
@@ -80,24 +80,7 @@ import { fetchStackOverflowPosts } from './src/ingestion/stackOverflow.js';
 // }
 // ============================================================================
 
-async function embedAndInsert(docs) {
-  if (!docs.length) {
-    console.log('No documents fetched, nothing to insert.');
-    return { inserted: 0 };
-  }
 
-  const collection = getCollection();
-  const texts = docs.map(doc => doc.text);
-  const vectors = await embedBatch(texts);
-
-  const finalDocs = docs.map((doc, i) => {
-    const { text, ...rest } = doc;
-    return { ...rest, embedding: vectors[i] };
-  });
-
-  await collection.insertMany(finalDocs);
-  return { inserted: finalDocs.length };
-}
 
 export async function ingestGithub(query) {
   const docs = await fetchGithubRepos(query).catch(err => {
