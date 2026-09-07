@@ -10,7 +10,7 @@ import { fetchHackerNews } from './src/ingestion/hackerNews.js';
 import { fetchStackOverflowPosts } from './src/ingestion/stackOverflow.js';
 
 // ============================================================================
-// DEDUPLICATION OPTIONS (Uncomment whichever method you prefer later):
+// DEDUPLICATION OPTIONS (Uncomment whichever method you prefer later):Written by Ai later to examine to use in production 
 // ============================================================================
 //
 // OPTION 1: Filter existing URLs BEFORE embedding (Saves ML computation time)
@@ -80,7 +80,6 @@ import { fetchStackOverflowPosts } from './src/ingestion/stackOverflow.js';
 // }
 // ============================================================================
 
-// shared logic: takes raw docs (with a `.text` field), embeds them, inserts them
 async function embedAndInsert(docs) {
   if (!docs.length) {
     console.log('No documents fetched, nothing to insert.');

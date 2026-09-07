@@ -15,7 +15,7 @@ export default function Results({ results, category, query }) {
                 <Link href={`/search?q=${query}&category=reddit`}><p className={category === 'reddit' ? 'text-blue-500 cursor-pointer' : 'cursor-pointer'}> Reddit</p></Link>
             </div>
             <ul>
-                {results.map((result) => (
+                {results?.map((result) => (
                     <Link href={result?.url || "#"} className="block px-3 py-2 text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800 transition-colors" key={result._id}>
                         <div className="flex gap-2 item-center p-3">
                             <Image

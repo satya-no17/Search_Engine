@@ -21,9 +21,9 @@ app.post('/ingest', async (req, res) => {
   }
 
   inProgress.add(query);
-  res.json({ status: 'started', query }); 
+  res.json({ status: 'started', query });
 
- try {
+  try {
     const result = await ingest(query);
     console.log(`Background ingestion complete for "${query}":`, result);
   } catch (err) {
@@ -35,7 +35,7 @@ app.post('/ingest', async (req, res) => {
 
 app.get('/health', (req, res) => res.json({ status: 'ok' }));
 
-const PORT = process.env.INGEST_PORT || 8000;
+const PORT = process.env.INGEST_PORT || 8001;
 connectDB().then(() => {
   app.listen(PORT, () => console.log(`Ingestion service running on port ${PORT}`));
 });

@@ -13,7 +13,7 @@ const page = async ({ searchParams }) => {
       cache: 'no-store'
     })
     const data = await res.json()
-    results = data;
+    results = Array.isArray(data) ? data : [];
     console.log(results)
   } catch (err) {
     console.error(err)
@@ -51,7 +51,7 @@ const page = async ({ searchParams }) => {
         </nav>
       </header>
 
-      <Results results={results} category={category} />
+      <Results results={results} category={category} query={query} />
     </div>
   )
 }

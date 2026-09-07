@@ -78,21 +78,22 @@ const page = () => {
               </div>
             </div>
             <div className='mt-3 flex flex-wrap justify-center gap-1 text-xs text-slate-200 sm:gap-3 sm:text-sm'>
-              {['⌘ All', '◉ GitHub', '▤ StackOverflow', '● HackerNews', '▣ Dev.io'].map((source, index) => {
-                let isActive = category===source
-                return(
-                <button
-                  className={`${isActive?'border-2':''} rounded-lg px-2 py-2 transition sm:px-3 ${index === 0 ? 'bg-slate-700 text-white shadow-inner' : 'hover:bg-slate-800 hover:text-cyan-200'}`}
-                  key={source}
-                  type='button'
-                  onClick={() => {
-                    setCategory(source)
-                  }}
-                >
-                  {source}
+              {['⌘ All', '◉ GitHub', '▤ StackOverflow', '● HackerNews', '▣ Devto'].map((source, index) => {
+                let isActive = category === source
+                return (
+                  <button
+                    className={`${isActive ? 'border-2' : ''} rounded-lg px-2 py-2 transition sm:px-3 ${index === 0 ? 'bg-slate-700 text-white shadow-inner' : 'hover:bg-slate-800 hover:text-cyan-200'}`}
+                    key={source}
+                    type='button'
+                    onClick={() => {
+                      setCategory(source)
+                    }}
+                  >
+                    {source}
 
-                </button>
-)})}
+                  </button>
+                )
+              })}
             </div>
           </div>
 
