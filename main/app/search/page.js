@@ -1,5 +1,6 @@
 import Results from '@/components/results'
 import Image from 'next/image'
+import Link from 'next/link'
 import React from 'react'
 
 const page = async ({ searchParams }) => {
@@ -50,8 +51,22 @@ const page = async ({ searchParams }) => {
           <button className='border rounded-2xl p-3 text-sm font-medium text-gray-600 transition hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'>LogIn/SignUp</button>
         </nav>
       </header>
-
-      <Results results={results} category={category} query={query} />
+      {results.length === 0 ? (
+        <div className=''>
+          <div className='flex gap-8 p-3 w-full'>
+            <p>AI mode</p>
+            <Link href={`/search?q=${query}&category=all`}><p className={category === 'all' ? 'text-blue-500 cursor-pointer' : 'cursor-pointer'}> All</p></Link>
+            <Link href={`/search?q=${query}&category=github`}><p className={category === 'github' ? 'text-blue-500 cursor-pointer' : 'cursor-pointer'}> Github</p></Link>
+            <Link href={`/search?q=${query}&category=devto`}><p className={category === 'devto' ? 'text-blue-500 cursor-pointer' : 'cursor-pointer'}> Dev.to</p></Link>
+            <Link href={`/search?q=${query}&category=hackernews`}><p className={category === 'hackernews' ? 'text-blue-500 cursor-pointer' : 'cursor-pointer'}> HackerNews</p></Link>
+            <Link href={`/search?q=${query}&category=stackoverflow`}><p className={category === 'stackoverflow' ? 'text-blue-500 cursor-pointer' : 'cursor-pointer'}> StackOverflow</p></Link>
+            <Link href={`/search?q=${query}&category=reddit`}><p className={category === 'reddit' ? 'text-blue-500 cursor-pointer' : 'cursor-pointer'}> Reddit</p></Link>
+          </div>
+          <p className='w-full h-screen flex items-center justify-center text-gray-500 dark:text-gray-400'>No results found</p>
+        </div>
+      ) : (
+        <Results results={results} category={category} query={query} />
+      )}
     </div>
   )
 }

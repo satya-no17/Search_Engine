@@ -1,173 +1,242 @@
-# 🔍 AI-Powered Search Engine
+# ⚡ Meowgle — AI-Powered Semantic Search & Data Ingestion Engine
 
-A modern, multi-tier search engine application combining a reactive Next.js frontend, an Express.js API gateway, and a Python-powered AI/vector search service.
+<div align="center">
 
----
+![Next.js](https://img.shields.io/badge/Next.js%2015-black?style=for-the-badge&logo=next.js&logoColor=white)
+![React](https://img.shields.io/badge/React%2019-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![Express.js](https://img.shields.io/badge/Express%205-000000?style=for-the-badge&logo=express&logoColor=white)
+![MongoDB Atlas](https://img.shields.io/badge/MongoDB%20Vector%20Search-47A248?style=for-the-badge&logo=mongodb&logoColor=white)
+![Hugging Face](https://img.shields.io/badge/Transformers.js-FFD21E?style=for-the-badge&logo=huggingface&logoColor=black)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS_v4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
 
-## 🏗️ Architecture Overview
+**A high-performance semantic search platform engineered for developers — combining dense vector retrieval, on-device local embeddings, a multi-source data ingestion pipeline, and an interactive CLI.**
 
-The project is structured as a decoupled three-tier microservice architecture:
+[Architecture](#-architecture) • [Features](#-key-features) • [Tech Stack](#-tech-stack) • [Quick Start](#-quick-start) • [API & CLI](#-api--cli-reference)
 
-```
-[ Frontend (Next.js) ]
-         │  HTTP / REST
-         ▼
-[ API Gateway (Express.js) ]
-         │  HTTP / Internal RPC
-         ▼
-[ AI & Search Engine (Python / ChromaDB) ]
-```
-
-1. **Frontend (`main/`)**: Next.js App Router application built with React 19 and Tailwind CSS v4, delivering a responsive user search interface.
-2. **API Gateway (`backend/expressServer/`)**: Express 5.x server acting as an API gateway to handle client requests, orchestration, CORS, and downstream service routing.
-3. **AI Search Service (`backend/pythonAi/`)**: Python-based AI service utilizing ChromaDB for semantic search, vector embeddings, and retrieval.
+</div>
 
 ---
 
-## 📁 Project Structure
+## 🏗️ Architecture
 
-```text
-Search_Engine/
-├── backend/
-│   ├── expressServer/         # Node.js / Express API Gateway
-│   │   ├── src/
-│   │   │   └── app.js         # Express app configuration
-│   │   ├── server.js          # Server entry point
-│   │   └── package.json       # Express dependencies & scripts
-│   │
-│   └── pythonAi/              # Python AI & Semantic Search Service
-│       ├── chroma_storage/    # ChromaDB local vector store (auto-generated)
-│       ├── main.py            # Python service entry point
-│       └── requirements.txt   # Python dependencies
-│
-├── main/                      # Next.js Frontend Application
-│   ├── app/                   # App Router pages and layouts
-│   │   ├── globals.css        # Tailwind CSS imports & theme styles
-│   │   ├── layout.js          # Root layout
-│   │   └── page.js            # Home / Search page
-│   ├── public/                # Static assets & icons
-│   ├── next.config.mjs        # Next.js configuration
-│   └── package.json           # Frontend dependencies & scripts
-│
-├── .gitignore                 # Root gitignore rules
-└── README.md                  # Project documentation
+The system is designed around a decoupled, service-oriented architecture that balances real-time query speed with background data crawling and vectorization:
+
 ```
+                                  ┌───────────────────────────────┐
+                                  │      Next.js 15 Frontend      │
+                                  │ (App Router, React 19, TWC4)  │
+                                  └───────────────┬───────────────┘
+                                                  │ HTTP (port 3000)
+                                                  ▼
+                                  ┌───────────────────────────────┐
+                                  │     Express 5 API Gateway     │
+                                  │  (Query Routing & Formatting) │
+                                  └───────┬───────────────┬───────┘
+                                          │               │
+                    1. Embed Query Vector │               │ 3. Trigger JIT Ingestion
+                (BGE-small-en via ONNX)   │               │    (Async Fire-and-Forget)
+                                          ▼               ▼
+                       ┌──────────────────────┐   ┌───────────────────────────────┐
+                       │    MongoDB Atlas     │   │      Ingestion Pipeline       │
+                       │ Vector Search Index  │   │     (Worker & Express 8001)   │
+                       │   ($vectorSearch)    │   └───────────────┬───────────────┘
+                       └──────────────────────┘                   │
+                                                  ┌───────────────┴───────────────┐
+                                                  │ Multi-Source Crawlers:        │
+                                                  │ • GitHub Repositories API     │
+                                                  │ • StackOverflow Search API    │
+                                                  │ • Reddit Discussions API      │
+                                                  │ • Hacker News Algolia API     │
+                                                  │ • Dev.to Technical Articles   │
+                                                  └───────────────────────────────┘
+```
+
+---
+
+## ✨ Key Features
+
+- 🧠 **On-Device Semantic Vector Search**: Generates normalized 384-dimensional dense embeddings directly in Node.js runtime using `@huggingface/transformers` (`BAAI/bge-small-en-v1.5`) without external paid inference dependencies.
+- ⚡ **MongoDB Atlas `$vectorSearch`**: Executes high-throughput k-NN vector similarity queries with cosine distance metrics, candidate projections, and metadata filtering.
+- 🔄 **Reactive Just-In-Time (JIT) Ingestion**: Every search query automatically queues asynchronous background crawling across 5 developer platforms to continuously refresh and expand the knowledge index.
+- 🛡️ **URL Deduplication Engine**: Pre-filters existing document URLs prior to vector embedding calculation to eliminate redundant ML computation and optimize DB write throughput.
+- 💻 **Interactive Ingestion CLI**: Includes a rich terminal utility (`@clack/prompts`, `figlet`, `gradient-string`) for manual querying, source isolation, and database seeding.
+- 🎨 **Modern Developer UI**: Dark-mode-first developer search interface featuring category filtering (GitHub, StackOverflow, Reddit, Hacker News, Dev.to), source branding, and responsive layout.
 
 ---
 
 ## 🛠️ Tech Stack
 
-### Frontend (`main`)
-- **Framework**: [Next.js](https://nextjs.org/) (App Router, React 19)
-- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
-- **Linting**: ESLint 9
-
-### Backend Gateway (`backend/expressServer`)
-- **Runtime**: [Node.js](https://nodejs.org/) (ES Modules)
-- **Framework**: [Express 5](https://expressjs.com/)
-- **HTTP Client**: Axios
-- **Utilities**: CORS, Dotenv
-
-### AI Search Service (`backend/pythonAi`)
-- **Language**: Python 3.x
-- **Vector Database**: [ChromaDB](https://www.trychroma.com/)
-- **Capabilities**: Vector embeddings, semantic similarity search, retrieval
+| Layer | Technologies |
+| :--- | :--- |
+| **Frontend** | [Next.js 15](https://nextjs.org/) (App Router), [React 19](https://react.dev/), [Tailwind CSS v4](https://tailwindcss.com/) |
+| **API Gateway** | [Express 5](https://expressjs.com/), [Node.js](https://nodejs.org/) (ES Modules), Axios, CORS |
+| **Embedding Model** | `@huggingface/transformers` (ONNX Runtime, `Xenova/bge-small-en-v1.5`) |
+| **Vector Database** | [MongoDB Atlas](https://www.mongodb.com/products/platform/atlas-vector-search) (`$vectorSearch` Index) |
+| **Ingestion Sources** | GitHub REST API, StackExchange API, Reddit JSON API, Hacker News Algolia API, Dev.to API |
+| **CLI Tooling** | `@clack/prompts`, `chalk`, `figlet`, `gradient-string` |
 
 ---
 
-## 🚀 Getting Started
+## 📁 Repository Structure
+
+```text
+Search_Engine/
+├── backend/
+│   ├── expressServer/            # Primary API Gateway (Port 5000)
+│   │   ├── src/
+│   │   │   ├── config/db.js      # MongoDB connection pool & collection helpers
+│   │   │   ├── controllers/      # Search aggregation & JIT ingestion triggers
+│   │   │   ├── embedding/        # In-process HuggingFace ONNX feature extractor
+│   │   │   └── routes/           # REST API route definitions
+│   │   ├── server.js             # Gateway entry point
+│   │   └── package.json
+│   │
+│   └── ingestionPipeline/        # Data Scraper & Vector Indexer (Port 8001)
+│       ├── src/
+│       │   ├── config/db.js      # Dedicated DB connector
+│       │   ├── embedding/        # Batch vector embedding generator
+│       │   ├── ingestion/        # Source crawlers (GitHub, Reddit, HN, Stack, Dev.to)
+│       │   └── lib/topics.js     # Default topic corpus for automated seeding
+│       ├── cli.js                # Interactive terminal management CLI
+│       ├── seed.js               # Automated seed runner
+│       ├── server.js             # Background ingestion webhook server
+│       ├── main.js               # Ingestion orchestrator & deduplication
+│       └── package.json
+│
+├── main/                         # Next.js 15 Web Application (Port 3000)
+│   ├── app/
+│   │   ├── search/page.js        # Search results page with category filters
+│   │   ├── layout.js             # Root layout with font and theme wrapper
+│   │   ├── globals.css           # Tailwind CSS v4 styling & dark theme tokens
+│   │   └── page.js               # Home hero search landing page
+│   ├── components/               # ThemeProvider, Results, and Footer components
+│   └── public/                   # Source logos (GitHub, StackOverflow, HN, Dev.to)
+│
+└── README.md
+```
+
+---
+
+## 🚀 Quick Start
 
 ### Prerequisites
 - **Node.js**: v18+ (v20+ recommended)
-- **npm** / **yarn** / **pnpm** / **bun**
-- **Python**: v3.10+ and `pip` / `venv`
+- **MongoDB Atlas Cluster** with a Vector Search index named `vector_index` configured on the `embedding` path (384 dimensions, cosine similarity).
 
 ---
 
-### 1. Setup & Run Backend Gateway (Express)
+### 1. Configure Environment Variables
 
-```bash
-cd backend/expressServer
+Create `.env` files in both backend services:
 
-# Install dependencies
-npm install
-
-# Start development server (defaults to port 5000)
-npm run dev
-```
-
-The Express API gateway will start on `http://localhost:5000`.
-
----
-
-### 2. Setup & Run Python AI Service
-
-```bash
-cd backend/pythonAi
-
-# Create virtual environment
-python3 -m venv venv
-
-# Activate virtual environment
-# On Linux/macOS:
-source venv/bin/activate
-# On Windows:
-# venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Run the Python AI service
-python main.py
-```
-
----
-
-### 3. Setup & Run Frontend (Next.js)
-
-```bash
-cd main
-
-# Install dependencies
-npm install
-
-# Start Next.js development server (defaults to port 3000)
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) in your browser.
-
----
-
-## ⚙️ Environment Variables
-
-Create `.env` files where required:
-
-### Express Gateway (`backend/expressServer/.env`)
+**`backend/expressServer/.env`**
 ```env
 PORT=5000
-PYTHON_AI_URL=http://localhost:8000
+MODEL="Xenova/bge-small-en-v1.5"
+MONGO_URI="your_mongodb_connection_string"
 ```
 
-### Python AI Service (`backend/pythonAi/.env`)
+**`backend/ingestionPipeline/.env`**
 ```env
-PORT=8000
-# Add embedding model or LLM API keys as needed (e.g., OPENAI_API_KEY, GEMINI_API_KEY)
+PORT=8001
+MODEL="Xenova/bge-small-en-v1.5"
+MONGO_URI="your_mongodb_connection_string"
+GIT_TOKEN="your_optional_github_token"
+STACKOVERFLOW_KEY="your_optional_stack_key"
 ```
 
 ---
 
-## 🧭 Roadmap & Upcoming Features
+### 2. Start Services
 
-- [ ] Semantic query embedding and vector indexing with ChromaDB.
-- [ ] Express gateway proxying search queries to the Python AI engine.
-- [ ] Real-time search UI with suggestions, filtering, and result summaries.
-- [ ] Document ingestion pipeline (PDFs, Web pages, text documents).
-- [ ] Hybrid search (lexical + dense semantic retrieval).
+#### A. Ingestion Service (Background Crawler)
+```bash
+cd backend/ingestionPipeline
+npm install
+npm run dev
+```
+*Runs on `http://localhost:8001`*
+
+#### B. API Gateway
+```bash
+cd backend/expressServer
+npm install
+npm run dev
+```
+*Runs on `http://localhost:5000`*
+
+#### C. Next.js Frontend
+```bash
+cd main
+npm install
+npm run dev
+```
+*Open [http://localhost:3000](http://localhost:3000) in your browser.*
 
 ---
 
-## 📄 License & Author
+## 💻 CLI & Seeding Tool
 
-- **Author**: Satyam Kumar
-- **License**: ISC
+Run the interactive terminal ingestion wizard to test sources or seed topics manually:
+
+```bash
+cd backend/ingestionPipeline
+
+# Launch interactive CLI
+node cli.js
+
+# Or run the batch seeder across default topics
+node seed.js both
+```
+
+---
+
+## 📡 API Reference
+
+### `GET /query/search`
+Searches indexed documents using dense vector similarity.
+
+**Query Parameters:**
+- `q` *(string, required)*: The search term or natural language developer question.
+- `category` *(string, optional)*: Filter by platform (`all`, `github`, `stackoverflow`, `hackernews`, `devto`, `reddit`).
+
+**Example Request:**
+```bash
+curl "http://localhost:5000/query/search?q=docker+compose+mongodb&category=github"
+```
+
+**Sample Response:**
+```json
+[
+  {
+    "_id": "67cb15c0e123...",
+    "title": "docker-compose-mongo-cluster",
+    "description": "Production-ready MongoDB cluster with replica sets using Docker Compose",
+    "url": "https://github.com/example/docker-compose-mongo-cluster",
+    "source": "github",
+    "stars": 420,
+    "score": 0.9142
+  }
+]
+```
+
+---
+
+## 🗺️ Roadmap
+
+- [x] In-process ONNX vector embeddings with `@huggingface/transformers`
+- [x] Multi-platform developer API ingestion (GitHub, Reddit, HN, StackOverflow, Dev.to)
+- [x] MongoDB Atlas `$vectorSearch` with score projections
+- [x] Interactive Terminal CLI for index operations
+- [ ] Hybrid Search (BM25 Lexical + Vector Dense Retrieval via Reciprocal Rank Fusion)
+- [ ] Streaming Generative AI summaries (RAG) using LLM synthesis
+- [ ] Distributed Task Queue migration with Redis & BullMQ
+- [ ] Docker Compose multi-service deployment
+
+---
+
+## 👤 Author
+
+**Satyam Kumar**
+- GitHub: [@satya-no17](https://github.com/satya-no17)
+- LinkedIn: [satyam-kumar](https://www.linkedin.com/in/satyam-kumar-929b97325/)
